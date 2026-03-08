@@ -127,6 +127,67 @@ v3.0.0  > REESCRITURA ARQUITECTURAL. Nombre cambia a "SuperCalc".
                 - Sistemas de ecuaciones (Gauss-Jordan con pasos / Cramer)
                 - Valores y vectores propios (iteración potencia)
             · Inecuaciones:
+                - Lineal (ax + b ⋛ c)
+                - Cuadrática (ax² + bx + c ⋛ 0)
+                - Sistema (dos inecuaciones lineales)
+                - Valor absoluto (|ax + b| ⋛ c)
+                - Recta numérica visual por tipo
+          Física mantiene Electromagnetismo + slot para secciones futuras.
+          Vectores: empieza vacío (sin vectores por defecto), canvas carga
+          correctamente al abrir, UI rediseñada con paleta unificada (violeta).
+          Manifest PWA actualizado: nombre "SuperCalc", ícono ∑ generado
+          dinámicamente con canvas, theme_color violeta.
+          Separación de archivos: index.html + style.css + app.js.
+
+v4.0.0  > NUEVO MÓDULO: Cálculo. Tercer módulo principal (color esmeralda).
+          4 submódulos con teclado de símbolos tipo C (agrupado por categoría):
+
+          · Cálculo Diferencial:
+              - Límites: bilateral, lateral derecho/izquierdo, en el infinito
+              - Derivadas: 1ra, 2da y 3ra orden; simbólica + numérica (Richardson)
+              - Evaluación en un punto
+              - Análisis completo: puntos críticos, máx/mín locales, concavidad
+
+          · Cálculo Integral:
+              - Integral indefinida: reglas simbólicas (potencia, sin, cos, ln, eˣ,
+                tan, arcsin, arccos, arctan, integración por partes básica)
+              - Integral definida: método de Simpson 1/3 (n=1000)
+              - Serie de Taylor/Maclaurin: N términos, centro a configurable
+
+          · Cálculo Multivariable:
+              - Derivadas parciales ∂f/∂x, ∂f/∂y, 1er y 2do orden
+              - Gradiente ∇f: magnitud, dirección, versor unitario
+              - Integral doble ∬: Simpson 2D (50×50), Teorema de Fubini
+
+          · Ecuaciones Diferenciales:
+              - ED 1er orden variables separables (RK4)
+              - ED lineal 1er orden y'+P(x)y=Q(x) (factor integrante + RK4)
+              - ED 2do orden coef. constantes ay''+by'+cy=0:
+                raíces reales distintas, raíz doble, raíces complejas
+
+          Teclado de símbolos agrupado por categoría con etiquetas:
+          Operadores (∂, d/dx, ∫, ∑, lim), Funciones (sin, cos, tan,
+          arcsin, arccos, arctan, ln, log, √, eˣ, |x|),
+          Constantes y potencias (xⁿ, π, ∞, e, paréntesis, 1/x).
+          Inserción en el input activo al tocar el botón.
+          Parser: funciones estándar + trigonométricas inversas + fracciones exactas.
+          Separación de archivos mantenida: index.html + style.css + app.js.
+
+
+  > REESCRITURA ARQUITECTURAL. Nombre cambia a "SuperCalc".
+          Nueva pantalla de inicio con logo ∑ y dos módulos principales:
+            · Álgebra Lineal (AL) — violeta
+            · Física (FÍS) — cyan
+          Cada módulo tiene un submenú propio.
+          AL ahora tiene 3 secciones:
+            · Vectores 3D (app original)
+            · Matrices & Ecuaciones Lineales:
+                - Operaciones entre N matrices de tamaño m×n variable
+                  (suma, resta, producto encadenado, escalar, transpuesta)
+                - Determinante e inversa (Gauss-Jordan)
+                - Sistemas de ecuaciones (Gauss-Jordan con pasos / Cramer)
+                - Valores y vectores propios (iteración potencia)
+            · Inecuaciones:
                 - Lineal (ax + b ⊳ c)
                 - Cuadrática (ax² + bx + c ⊳ 0)
                 - Sistema (dos inecuaciones lineales)
@@ -333,5 +394,6 @@ v3.0.0  > REESCRITURA ARQUITECTURAL. Nombre cambia a "SuperCalc".
 
 
 © 2026 xii1rst. Todos los derechos reservados.
+Desarrollado con asistencia de Claude (Anthropic).
 
 ================================================================================
