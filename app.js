@@ -1,4 +1,4 @@
-// SuperCalc v3.0.0 — Application Logic
+// SuperCalc v4.0.0 — Application Logic
 
 
 
@@ -6,10 +6,11 @@
 let deferredPrompt=null;
 if('serviceWorker' in navigator){
   const swCode=[
-    "const CACHE='supercalc-3.0.0';",
-    "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.add(self.location.href.split('?')[0])).then(()=>self.skipWaiting()));});",
+    "const CACHE='supercalc-4.0.0';",
+    "const PRECACHE=['./','./index.html','./style.css','./app.js','https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap'];",
+    "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(PRECACHE.map(url=>c.add(new Request(url,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()));});",
     "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});",
-    "self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res&&res.status===200){const cl=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,cl));}return res;}).catch(()=>caches.match(e.request))));});"
+    "self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(cached=>{if(cached)return cached;return fetch(e.request).then(res=>{if(res&&res.status===200){const cl=res.clone();caches.open(CACHE).then(c=>c.put(e.request,cl));}return res;}).catch(()=>caches.match(e.request));}));});"
   ].join('\n');
   const swBlob=new Blob([swCode],{type:'application/javascript'});
   const swUrl=URL.createObjectURL(swBlob);
