@@ -103,6 +103,31 @@ function fN(x,dec=4){
 }
 function fV(vx,vy,vz){ return mode===3?`(${fN(vx)}, ${fN(vy)}, ${fN(vz)})`:`(${fN(vx)}, ${fN(vy)})`; }
 
+// Muestra una magnitud como √n cuando n es entero y la raíz no es entera.
+// p.ej. fMag(8.3666...) → "√70"  |  fMag(5) → "5"  |  fMag(√2) → "√2"
+function fMag(x){
+  if(isNaN(x)||!isFinite(x)) return '—';
+  if(x<0) return fN(x);
+  // ¿Es entero exacto?
+  const rounded=Math.round(x);
+  if(Math.abs(x-rounded)<1e-9) return String(rounded);
+  // ¿Es raíz de un entero? n = x²
+  const n2=x*x;
+  const n2r=Math.round(n2);
+  if(Math.abs(n2-n2r)<1e-6 && n2r>0){
+    // Simplificar √n2r: extraer cuadrado perfecto
+    let out=n2r, coef=1;
+    for(let p=2;p*p<=out;p++){
+      while(out%(p*p)===0){coef*=p;out=Math.round(out/(p*p));}
+    }
+    if(out===1) return String(coef);          // coef*√1 = coef (entero)
+    if(coef===1) return `√${out}`;            // √n
+    return `${coef}√${out}`;                  // k√n
+  }
+  // Fallback decimal
+  return fN(x);
+}
+
 
 function toggleSection(el){
   const body=el.nextElementSibling;
@@ -248,7 +273,7 @@ function rM(){
     const az=mode===3&&m?Math.acos(Math.max(-1,Math.min(1,v.vz/m)))*180/Math.PI:null;
     const ux=m?fN(v.vx/m):'—',uy=m?fN(v.vy/m):'—',uz=mode===3&&m?fN(v.vz/m):'—';
     h+=`<div class="math-card full"><div class="math-label" style="color:${c}">${v.nm}</div>
-      <div class="math-value">|${v.nm}| = ${fN(m)}</div>
+      <div class="math-value">|${v.nm}| = ${fMag(m)}</div>
       <div class="math-value sm">αx=${fN(ax,2)}° αy=${fN(ay,2)}°${az!==null?' αz='+fN(az,2)+'°':''}</div>
       <div class="math-value sm" style="color:var(--text3)">û = (${ux}, ${uy}${mode===3?', '+uz:''})</div>
     </div>`;
@@ -263,7 +288,7 @@ function rM(){
     <div class="math-grid">
       <div class="math-card full"><div class="math-label">${names}</div>
         <div class="math-value sm">${fV(sumV.vx,sumV.vy,sumV.vz)}</div>
-        <div class="math-value">|suma| = ${fN(sumM)}</div>
+        <div class="math-value">|suma| = ${fMag(sumM)}</div>
       </div>
     </div>`;
   }
@@ -285,21 +310,21 @@ function rM(){
 
     const angSteps = [
       `cos θ = (<b>${a.nm}·${b.nm}</b>) / (|${a.nm}|·|${b.nm}|)`,
-      `|${a.nm}| = ${fN(ma,4)},  |${b.nm}| = ${fN(mb,4)}`,
-      `cos θ = ${fN(d,4)} / (${fN(ma,4)} × ${fN(mb,4)})`,
-      `cos θ = ${fN(d,4)} / ${fN(ma*mb,4)}`,
+      `|${a.nm}| = ${fMag(ma)},  |${b.nm}| = ${fMag(mb)}`,
+      `cos θ = ${fN(d,4)} / (${fMag(ma)} × ${fMag(mb)})`,
+      `cos θ = ${fN(d,4)} / ${fMag(ma*mb)}`,
       `cos θ = ${fN(ma&&mb?d/(ma*mb):0,6)}`,
       `θ = cos⁻¹(${fN(ma&&mb?d/(ma*mb):0,6)})`,
       `θ = <b>${fN(an,4)}°</b>`,
     ];
     const projABSteps = [
       `proy = (<b>${a.nm}·${b.nm}</b>) / |${b.nm}|`,
-      `= ${fN(d,4)} / ${fN(mb,4)}`,
+      `= ${fN(d,4)} / ${fMag(mb)}`,
       `= <b>${fN(pab,4)}</b>`,
     ];
     const projBASteps = [
       `proy = (<b>${a.nm}·${b.nm}</b>) / |${a.nm}|`,
-      `= ${fN(d,4)} / ${fN(ma,4)}`,
+      `= ${fN(d,4)} / ${fMag(ma)}`,
       `= <b>${fN(pba,4)}</b>`,
     ];
     const crossSteps = cr ? [
@@ -308,7 +333,7 @@ function rM(){
       `j: (${fN(a.vz)})(${fN(b.vx)}) − (${fN(a.vx)})(${fN(b.vz)}) = <b>${fN(cr.y,4)}</b>`,
       `k: (${fN(a.vx)})(${fN(b.vy)}) − (${fN(a.vy)})(${fN(b.vx)}) = <b>${fN(cr.z,4)}</b>`,
       `resultado = <b>(${fN(cr.x,4)}, ${fN(cr.y,4)}, ${fN(cr.z,4)})</b>`,
-      `|${a.nm}×${b.nm}| = ${fN(crM,4)}`,
+      `|${a.nm}×${b.nm}| = ${fMag(crM)}`,
     ] : [];
 
     const mkCard = (label,value,hint,steps,full=false) => {
@@ -353,7 +378,7 @@ function rO(){
   let rh='';
   if(rV){
     if(rV.scalar){rh=`<div class="result-box"><div class="result-title">⟶ Resultado escalar</div><div class="result-val">${fN(rV.sv,4)}</div><div class="result-sub">Valor escalar — no se grafica</div></div>`;}
-    else{const m=vmag(rV,mode);const cp=fV(rV.vx,rV.vy,rV.vz);rh=`<div class="result-box"><div class="result-title">⟶ Resultado vector</div><div class="result-val">${cp}</div><div class="result-sub">|res| = ${fN(m,4)}</div></div><button class="add-vec-btn" style="border-style:solid;border-color:${RC};color:${RC};margin-top:0" onclick="saveR()">+ Guardar como vector</button>`;}
+    else{const m=vmag(rV,mode);const cp=fV(rV.vx,rV.vy,rV.vz);rh=`<div class="result-box"><div class="result-title">⟶ Resultado vector</div><div class="result-val">${cp}</div><div class="result-sub">|res| = ${fMag(m)}</div></div><button class="add-vec-btn" style="border-style:solid;border-color:${RC};color:${RC};margin-top:0" onclick="saveR()">+ Guardar como vector</button>`;}
   }
   p.innerHTML=`<div class="section-title">Selecciona vectores</div>
     <div class="ops-vec-btns">${sb}</div>
@@ -433,7 +458,7 @@ function rE(){
       sh=`<div class="solve-result"><div class="solve-title">✓ ${sR.nm} resuelto</div>
         ${sR.steps.map(s=>`<div class="solve-step"><b>›</b> ${s}</div>`).join('')}
         <div class="solve-final">${sR.nm} = ${cp}</div>
-        <div class="solve-mag">|${sR.nm}| = ${fN(m,4)}</div></div>
+        <div class="solve-mag">|${sR.nm}| = ${fMag(m)}</div></div>
         <button class="add-vec-btn" style="border-style:solid;border-color:${SC};color:${SC};margin-top:0" onclick="saveSol()">+ Graficar ${sR.nm}</button>`;}
   }
   p.innerHTML=`<div class="solver-desc">Vectores: ${vn}<br/>Escribe una ecuación vectorial y despeja la incógnita.<br/>Ejemplo: <strong>${ex}</strong></div>
@@ -3874,21 +3899,21 @@ function triCalc(){
     `= <b>(${fmt(PQ.x)}, ${fmt(PQ.y)}, ${fmt(PQ.z)})</b>`,
     `|<b>PQ</b>| = √(${fmt(PQ.x)}² + ${fmt(PQ.y)}² + ${fmt(PQ.z)}²)`,
     `= √(${fmt(PQ.x**2)} + ${fmt(PQ.y**2)} + ${fmt(PQ.z**2)})`,
-    `= √${fmt(PQ.x**2+PQ.y**2+PQ.z**2)} = <b>${fmt(dPQ)}</b>`,
+    `= √${fmt(PQ.x**2+PQ.y**2+PQ.z**2)} = <b>${fMag(dPQ)}</b>`,
   ];
   const stepsQR=[
     `<b style="color:#4da6ff">QR</b> = R − Q`,
     `= (${R.x}−${Q.x}, ${R.y}−${Q.y}, ${R.z}−${Q.z})`,
     `= <b>(${fmt(QR.x)}, ${fmt(QR.y)}, ${fmt(QR.z)})</b>`,
     `|<b>QR</b>| = √(${fmt(QR.x)}² + ${fmt(QR.y)}² + ${fmt(QR.z)}²)`,
-    `= √${fmt(QR.x**2+QR.y**2+QR.z**2)} = <b>${fmt(dQR)}</b>`,
+    `= √${fmt(QR.x**2+QR.y**2+QR.z**2)} = <b>${fMag(dQR)}</b>`,
   ];
   const stepsPR=[
     `<b style="color:#2dd4a0">PR</b> = R − P`,
     `= (${R.x}−${P.x}, ${R.y}−${P.y}, ${R.z}−${P.z})`,
     `= <b>(${fmt(PR.x)}, ${fmt(PR.y)}, ${fmt(PR.z)})</b>`,
     `|<b>PR</b>| = √(${fmt(PR.x)}² + ${fmt(PR.y)}² + ${fmt(PR.z)}²)`,
-    `= √${fmt(PR.x**2+PR.y**2+PR.z**2)} = <b>${fmt(dPR)}</b>`,
+    `= √${fmt(PR.x**2+PR.y**2+PR.z**2)} = <b>${fMag(dPR)}</b>`,
   ];
 
   // Pasos ángulo P
@@ -3926,8 +3951,8 @@ function triCalc(){
     `i: (${fmt(PQ.y)})(${fmt(PR.z)}) − (${fmt(PQ.z)})(${fmt(PR.y)}) = <b>${fmt(cr.x)}</b>`,
     `j: (${fmt(PQ.z)})(${fmt(PR.x)}) − (${fmt(PQ.x)})(${fmt(PR.z)}) = <b>${fmt(cr.y)}</b>`,
     `k: (${fmt(PQ.x)})(${fmt(PR.y)}) − (${fmt(PQ.y)})(${fmt(PR.x)}) = <b>${fmt(cr.z)}</b>`,
-    `|<b>PQ × PR</b>| = √(${fmt(cr.x)}² + ${fmt(cr.y)}² + ${fmt(cr.z)}²) = ${fmt(mag3(cr))}`,
-    `Área = |PQ × PR| / 2 = ${fmt(mag3(cr))} / 2 = <b>${fmt(area)}</b>`,
+    `|<b>PQ × PR</b>| = √(${fmt(cr.x)}² + ${fmt(cr.y)}² + ${fmt(cr.z)}²) = ${fMag(mag3(cr))}`,
+    `Área = |PQ × PR| / 2 = ${fmt(mag3(cr))} / 2 = <b>${fMag(area)}</b>`,
   ];
 
   const verif=Math.abs(sumAng-180)<0.01
@@ -3937,9 +3962,9 @@ function triCalc(){
   document.getElementById('tri-res').innerHTML=`
     <!-- Resumen superior -->
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-      ${mkResult('Lado PQ', fmt(dPQ), '#f0c040')}
-      ${mkResult('Lado QR', fmt(dQR), '#4da6ff')}
-      ${mkResult('Lado PR', fmt(dPR), '#2dd4a0')}
+      ${mkResult('Lado PQ', fMag(dPQ), '#f0c040')}
+      ${mkResult('Lado QR', fMag(dQR), '#4da6ff')}
+      ${mkResult('Lado PR', fMag(dPR), '#2dd4a0')}
     </div>
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
       ${mkResult('Ángulo P', fmt(angP)+'°', '#f0c040')}
@@ -3947,8 +3972,8 @@ function triCalc(){
       ${mkResult('Ángulo R', fmt(angR)+'°', '#2dd4a0')}
     </div>
     <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-      ${mkResult('Perímetro', fmt(dPQ+dQR+dPR))}
-      ${mkResult('Área', fmt(area))}
+      ${mkResult('Perímetro', fMag(dPQ+dQR+dPR))}
+      ${mkResult('Área', fMag(area))}
     </div>
     <div style="font-family:'Space Mono',monospace;font-size:9px;margin-bottom:14px;padding:7px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">${verif}</div>
 
