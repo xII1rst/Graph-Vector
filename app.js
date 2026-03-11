@@ -209,7 +209,7 @@ function renderVecs(){
   document.getElementById('pV').innerHTML=h;
   rLeg();
 }
-function uV(id,k,val){const v=vecs.find(v=>v.id===id);if(v)v[k]=parseFloat(val)||0;draw();if(document.getElementById('pM').classList.contains('on'))rM();}
+function uV(id,k,val){const v=vecs.find(v=>v.id===id);if(v)v[k]=parseFloat(val)||0;draw();rLeg();if(document.getElementById('pM').classList.contains('on'))rM();}
 function uN(id,val){const v=vecs.find(v=>v.id===id);if(v)v.nm=val||'v';rLeg();if(document.getElementById('pO').classList.contains('on'))rO();if(document.getElementById('pE').classList.contains('on'))rE();if(document.getElementById('pI').classList.contains('on'))rI();}
 function togV(id){const v=vecs.find(v=>v.id===id);if(v)v.on=!v.on;renderVecs();draw();if(document.getElementById('pM').classList.contains('on'))rM();}
 function delV(id){if(vecs.length<=1){alert('Al menos 1 vector.');return;}vecs=vecs.filter(v=>v.id!==id);opI=opI.filter(i=>i!==id);renderVecs();draw();rO();rE();rI();}
@@ -3973,19 +3973,41 @@ function triCalc(){
 }
 
 function triDrawCanvas(P, Q, R){
-  // Cambiar a tab Vectores y dibujar el triángulo
-  showTab('V');
-  // Guardar vecs actuales y reemplazar temporalmente
-  const triVecsBackup = [...vecs];
+  // Guardar vecs del usuario para poder restaurarlos
+  window._triVecsBackup = vecs.map(v=>({...v}));
+
+  // Asignar los 3 puntos como vectores
   vecs = [
     {id:901,nm:'P',vx:P.x,vy:P.y,vz:P.z,cl:'#f0c040'},
     {id:902,nm:'Q',vx:Q.x,vy:Q.y,vz:Q.z,cl:'#4da6ff'},
     {id:903,nm:'R',vx:R.x,vy:R.y,vz:R.z,cl:'#2dd4a0'},
   ];
-  renderVecs();
-  draw();
-  // Restaurar vecs originales pero mantener canvas hasta que el usuario cambie tab
-  vecs = triVecsBackup;
-  // Volver al tab triángulo para ver resultados
-  setTimeout(()=>showTab('T'), 50);
+
+  // Asegurarse de estar en R³
+  if(mode!==3){ mode=3; }
+
+  // Renderizar y dibujar — con delay para que el canvas esté visible
+  showTab('V');
+  setTimeout(()=>{
+    renderVecs();
+    rLeg();
+    draw();
+    // Añadir botón de retorno en el panel de vectores
+    const pV = document.getElementById('pV');
+    if(pV && !document.getElementById('tri-restore-btn')){
+      const btn = document.createElement('button');
+      btn.id = 'tri-restore-btn';
+      btn.textContent = '← Restaurar mis vectores';
+      btn.style.cssText = 'margin:8px 14px;padding:7px 14px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text3);font-family:Space Mono,monospace;font-size:10px;cursor:pointer;display:block;width:calc(100% - 28px)';
+      btn.onclick = ()=>{
+        vecs = window._triVecsBackup || vecs;
+        renderVecs(); rLeg(); draw();
+        btn.remove();
+        showTab('T');
+      };
+      pV.insertBefore(btn, pV.firstChild);
+    }
+    // Volver a mostrar resultados
+    setTimeout(()=>showTab('T'), 80);
+  }, 60);
 }
