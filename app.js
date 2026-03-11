@@ -111,6 +111,17 @@ function toggleSection(el){
   body.style.maxHeight=isOpen?'0px':(body.scrollHeight+20)+'px';
   if(arrow) arrow.classList.toggle('open',!isOpen);
 }
+function mathTogSteps(sid,tog){
+  const body=document.getElementById(sid);
+  if(!body) return;
+  const on=!body.classList.contains('on');
+  body.classList.toggle('on',on);
+  tog.classList.toggle('on',on);
+  tog.querySelector('span:last-child').textContent=on?'ocultar pasos':'ver pasos';
+  // Expandir el collapsible-body padre si está colapsado
+  const cb=body.closest('.collapsible-body');
+  if(cb&&on) cb.style.maxHeight=(cb.scrollHeight+body.scrollHeight+40)+'px';
+}
 function openAllSections(){
   document.querySelectorAll('.collapsible-body').forEach(b=>{b.style.maxHeight=(b.scrollHeight+20)+'px';});
   document.querySelectorAll('.collapsible-arrow').forEach(a=>a.classList.add('open'));
@@ -261,7 +272,60 @@ function rM(){
     const a=act[i],b=act[j],ci=a.cl,cj=b.cl;
     const d=vdot(a,b,mode),an=vangle(a,b,mode),pab=vproj(a,b,mode),pba=vproj(b,a,mode);
     const cr=mode===3?vcross(a,b):null,crM=cr?Math.sqrt(cr.x**2+cr.y**2+cr.z**2):0;
+    const ma=vmag(a,mode),mb=vmag(b,mode);
     const hint=eduHint('ang',an);
+
+    const dotSteps = mode===3
+      ? [`<b>${a.nm}·${b.nm}</b> = (${fN(a.vx)})(${fN(b.vx)}) + (${fN(a.vy)})(${fN(b.vy)}) + (${fN(a.vz)})(${fN(b.vz)})`,
+         `= ${fN(a.vx*b.vx)} + ${fN(a.vy*b.vy)} + ${fN(a.vz*b.vz)}`,
+         `= <b>${fN(d)}</b>`]
+      : [`<b>${a.nm}·${b.nm}</b> = (${fN(a.vx)})(${fN(b.vx)}) + (${fN(a.vy)})(${fN(b.vy)})`,
+         `= ${fN(a.vx*b.vx)} + ${fN(a.vy*b.vy)}`,
+         `= <b>${fN(d)}</b>`];
+
+    const angSteps = [
+      `cos θ = (<b>${a.nm}·${b.nm}</b>) / (|${a.nm}|·|${b.nm}|)`,
+      `|${a.nm}| = ${fN(ma,4)},  |${b.nm}| = ${fN(mb,4)}`,
+      `cos θ = ${fN(d,4)} / (${fN(ma,4)} × ${fN(mb,4)})`,
+      `cos θ = ${fN(d,4)} / ${fN(ma*mb,4)}`,
+      `cos θ = ${fN(ma&&mb?d/(ma*mb):0,6)}`,
+      `θ = cos⁻¹(${fN(ma&&mb?d/(ma*mb):0,6)})`,
+      `θ = <b>${fN(an,4)}°</b>`,
+    ];
+    const projABSteps = [
+      `proy = (<b>${a.nm}·${b.nm}</b>) / |${b.nm}|`,
+      `= ${fN(d,4)} / ${fN(mb,4)}`,
+      `= <b>${fN(pab,4)}</b>`,
+    ];
+    const projBASteps = [
+      `proy = (<b>${a.nm}·${b.nm}</b>) / |${a.nm}|`,
+      `= ${fN(d,4)} / ${fN(ma,4)}`,
+      `= <b>${fN(pba,4)}</b>`,
+    ];
+    const crossSteps = cr ? [
+      `<b>${a.nm}×${b.nm}</b> — regla del determinante 3×3`,
+      `i: (${fN(a.vy)})(${fN(b.vz)}) − (${fN(a.vz)})(${fN(b.vy)}) = <b>${fN(cr.x,4)}</b>`,
+      `j: (${fN(a.vz)})(${fN(b.vx)}) − (${fN(a.vx)})(${fN(b.vz)}) = <b>${fN(cr.y,4)}</b>`,
+      `k: (${fN(a.vx)})(${fN(b.vy)}) − (${fN(a.vy)})(${fN(b.vx)}) = <b>${fN(cr.z,4)}</b>`,
+      `resultado = <b>(${fN(cr.x,4)}, ${fN(cr.y,4)}, ${fN(cr.z,4)})</b>`,
+      `|${a.nm}×${b.nm}| = ${fN(crM,4)}`,
+    ] : [];
+
+    const mkCard = (label,value,hint,steps,full=false) => {
+      const sid='mst_'+(Math.random().toString(36).slice(2,7));
+      return `<div class="math-card${full?' full':''}">
+        <div class="math-label">${label}</div>
+        <div class="math-value${full?' sm':''}">${value}</div>
+        ${hint?`<div class="math-hint">${hint}</div>`:''}
+        <div class="math-steps-tog" onclick="mathTogSteps('${sid}',this)">
+          <span class="tog-arr">▶</span><span>ver pasos</span>
+        </div>
+        <div class="math-steps-body" id="${sid}">
+          ${steps.map(s=>`<div class="math-step-line">${s}</div>`).join('')}
+        </div>
+      </div>`;
+    };
+
     h+=`<div class="collapsible-header" onclick="toggleSection(this)">
       <div class="section-title" style="margin-bottom:0;border-bottom:none;flex:1">
         <span style="color:${ci}">${a.nm}</span>&nbsp;—&nbsp;<span style="color:${cj}">${b.nm}</span>
@@ -269,13 +333,13 @@ function rM(){
       </div>
       <span class="collapsible-arrow open">▶</span>
     </div>
-    <div class="collapsible-body" style="max-height:400px">
+    <div class="collapsible-body" style="max-height:9999px">
     <div class="math-grid" style="margin-bottom:10px">
-      <div class="math-card"><div class="math-label">Prod. punto</div><div class="math-value">${fN(d)}</div><div class="math-hint">${eduHint('dot',d)}</div></div>
-      <div class="math-card"><div class="math-label">Ángulo</div><div class="math-value">${fN(an,2)}°</div></div>
-      <div class="math-card"><div class="math-label">Proy ${a.nm}→${b.nm}</div><div class="math-value">${fN(pab)}</div></div>
-      <div class="math-card"><div class="math-label">Proy ${b.nm}→${a.nm}</div><div class="math-value">${fN(pba)}</div></div>
-      ${cr?`<div class="math-card full"><div class="math-label">${a.nm} × ${b.nm}</div><div class="math-value sm">(${fN(cr.x,2)}, ${fN(cr.y,2)}, ${fN(cr.z,2)})</div><div class="math-hint">${eduHint('cr',crM)}</div></div>`:''}
+      ${mkCard('Prod. punto',fN(d),eduHint('dot',d),dotSteps)}
+      ${mkCard('Ángulo',fN(an,2)+'°','',angSteps)}
+      ${mkCard(`Proy ${a.nm}→${b.nm}`,fN(pab),'',projABSteps)}
+      ${mkCard(`Proy ${b.nm}→${a.nm}`,fN(pba),'',projBASteps)}
+      ${cr?mkCard(`${a.nm}×${b.nm}`,`(${fN(cr.x,2)}, ${fN(cr.y,2)}, ${fN(cr.z,2)})`,eduHint('cr',crM),crossSteps,true):''}
     </div></div>`;
   }
   mc.innerHTML=h;

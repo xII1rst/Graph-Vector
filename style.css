@@ -259,6 +259,18 @@ canvas:active{cursor:grabbing}
 .math-value{font-size:14px;color:var(--accent);font-weight:700;font-family:'Space Mono',monospace}
 .math-value.sm{font-size:11px;line-height:1.7}
 .math-hint{font-size:10px;color:var(--green);margin-top:3px;font-style:italic}
+/* pasos toggle */
+.math-steps-tog{display:inline-flex;align-items:center;gap:5px;margin-top:7px;cursor:pointer;user-select:none;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:border-color .15s}
+.math-steps-tog:hover{border-color:var(--accent)}
+.math-steps-tog span{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.04em}
+.math-steps-tog .tog-arr{font-size:8px;color:var(--text3);transition:transform .2s}
+.math-steps-tog.on .tog-arr{transform:rotate(90deg)}
+.math-steps-tog.on span{color:var(--accent)}
+.math-steps-tog.on{border-color:var(--accent)}
+.math-steps-body{display:none;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.math-steps-body.on{display:block}
+.math-step-line{font-family:'Space Mono',monospace;font-size:9px;color:#a0b4cc;line-height:1.9;padding:2px 0}
+.math-step-line b{color:var(--accent)}
 .collapsible-header{display:flex;align-items:center;cursor:pointer;user-select:none;gap:6px;padding:4px 0}
 .collapsible-header:hover .section-title{color:var(--text2)}
 .collapsible-arrow{font-size:9px;color:var(--text3);transition:transform .2s;flex-shrink:0}
