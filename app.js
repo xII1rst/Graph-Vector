@@ -110,23 +110,10 @@ function fV(vx,vy,vz){ return mode===3?`(${fN(vx)}, ${fN(vy)}, ${fN(vz)})`:`(${f
 function fMag(x){
   if(isNaN(x)||!isFinite(x)) return '—';
   if(x<0) return fN(x);
-  // ¿Es entero exacto?
   const rounded=Math.round(x);
   if(Math.abs(x-rounded)<1e-9) return String(rounded);
-  // ¿Es raíz de un entero? n = x²
-  const n2=x*x;
-  const n2r=Math.round(n2);
-  if(Math.abs(n2-n2r)<1e-6 && n2r>0){
-    // Simplificar √n2r: extraer cuadrado perfecto
-    let out=n2r, coef=1;
-    for(let p=2;p*p<=out;p++){
-      while(out%(p*p)===0){coef*=p;out=Math.round(out/(p*p));}
-    }
-    if(out===1) return String(coef);          // coef*√1 = coef (entero)
-    if(coef===1) return `√${out}`;            // √n
-    return `${coef}√${out}`;                  // k√n
-  }
-  // Fallback decimal
+  const n2=x*x, n2r=Math.round(n2);
+  if(Math.abs(n2-n2r)<1e-6 && n2r>0) return `√${n2r}`;
   return fN(x);
 }
 
