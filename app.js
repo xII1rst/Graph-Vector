@@ -105,7 +105,20 @@ function fN(x,dec=4){
 }
 function fV(vx,vy,vz){ return mode===3?`(${fN(vx)}, ${fN(vy)}, ${fN(vz)})`:`(${fN(vx)}, ${fN(vy)})`; }
 
-// Muestra una magnitud como √n cuando n es entero y la raíz no es entera.
+// Convierte grados decimales → grados°minutos'segundos"
+function fDMS(deg){
+  if(isNaN(deg)||!isFinite(deg)) return '—';
+  const sign=deg<0?'-':'';
+  const abs=Math.abs(deg);
+  const d=Math.floor(abs);
+  const mf=(abs-d)*60;
+  const m=Math.floor(mf);
+  const s=Math.round((mf-m)*60);
+  // Manejar carry si s=60
+  if(s===60){ return fDMS(sign?-(d+m/60+1/60):d+m/60+1/60); }
+  return `${sign}${d}°${String(m).padStart(2,'0')}'${String(s).padStart(2,'0')}"`;
+}
+
 // p.ej. fMag(8.3666...) → "√70"  |  fMag(5) → "5"  |  fMag(√2) → "√2"
 function fMag(x){
   if(isNaN(x)||!isFinite(x)) return '—';
@@ -263,7 +276,7 @@ function rM(){
     const ux=m?fN(v.vx/m):'—',uy=m?fN(v.vy/m):'—',uz=mode===3&&m?fN(v.vz/m):'—';
     h+=`<div class="math-card full"><div class="math-label" style="color:${c}">${v.nm}</div>
       <div class="math-value">|${v.nm}| = ${fMag(m)}</div>
-      <div class="math-value sm">αx=${fN(ax,2)}° αy=${fN(ay,2)}°${az!==null?' αz='+fN(az,2)+'°':''}</div>
+      <div class="math-value sm">αx=${fDMS(ax)} αy=${fDMS(ay)}${az!==null?' αz='+fDMS(az):''}</div>
       <div class="math-value sm" style="color:var(--text3)">û = (${ux}, ${uy}${mode===3?', '+uz:''})</div>
     </div>`;
   });
@@ -304,7 +317,7 @@ function rM(){
       `cos θ = ${fN(d,4)} / ${fMag(ma*mb)}`,
       `cos θ = ${fN(ma&&mb?d/(ma*mb):0,6)}`,
       `θ = cos⁻¹(${fN(ma&&mb?d/(ma*mb):0,6)})`,
-      `θ = <b>${fN(an,4)}°</b>`,
+      `θ = <b>${fDMS(an)}</b>`,
     ];
     const projABSteps = [
       `proy = (<b>${a.nm}·${b.nm}</b>) / |${b.nm}|`,
@@ -350,7 +363,7 @@ function rM(){
     <div class="collapsible-body" style="max-height:9999px">
     <div class="math-grid" style="margin-bottom:10px">
       ${mkCard('Prod. punto',fN(d),eduHint('dot',d),dotSteps)}
-      ${mkCard('Ángulo',fN(an,2)+'°','',angSteps)}
+      ${mkCard('Ángulo',fDMS(an),'',angSteps)}
       ${mkCard(`Proy ${a.nm}→${b.nm}`,fN(pab),'',projABSteps)}
       ${mkCard(`Proy ${b.nm}→${a.nm}`,fN(pba),'',projBASteps)}
       ${cr?mkCard(`${a.nm}×${b.nm}`,`(${fN(cr.x,2)}, ${fN(cr.y,2)}, ${fN(cr.z,2)})`,eduHint('cr',crM),crossSteps,true):''}
@@ -3913,7 +3926,7 @@ function triCalc(){
     `= ${fmt(PQ.x*PR.x)} + ${fmt(PQ.y*PR.y)} + ${fmt(PQ.z*PR.z)} = <b>${fmt(dotPQPR)}</b>`,
     `cos P = ${fmt(dotPQPR)} / (${fmt(dPQ)} × ${fmt(dPR)})`,
     `cos P = ${fmt(dotPQPR)} / ${fmt(dPQ*dPR)} = ${fmt(dotPQPR/(dPQ*dPR))}`,
-    `P = cos⁻¹(${fmt(dotPQPR/(dPQ*dPR))}) = <b>${fmt(angP)}°</b>`,
+    `P = cos⁻¹(${fmt(dotPQPR/(dPQ*dPR))}) = <b>${fDMS(angP)}</b>`,
   ];
   const dotQPQR=dot3(QP,QR);
   const stepsAngQ=[
@@ -3922,7 +3935,7 @@ function triCalc(){
     `= ${fmt(QP.x*QR.x)} + ${fmt(QP.y*QR.y)} + ${fmt(QP.z*QR.z)} = <b>${fmt(dotQPQR)}</b>`,
     `cos Q = ${fmt(dotQPQR)} / (${fmt(dPQ)} × ${fmt(dQR)})`,
     `cos Q = ${fmt(dotQPQR)} / ${fmt(dPQ*dQR)} = ${fmt(dotQPQR/(dPQ*dQR))}`,
-    `Q = cos⁻¹(${fmt(dotQPQR/(dPQ*dQR))}) = <b>${fmt(angQ)}°</b>`,
+    `Q = cos⁻¹(${fmt(dotQPQR/(dPQ*dQR))}) = <b>${fDMS(angQ)}</b>`,
   ];
   const dotRPRQ=dot3(RP,RQ);
   const stepsAngR=[
@@ -3931,7 +3944,7 @@ function triCalc(){
     `= ${fmt(RP.x*RQ.x)} + ${fmt(RP.y*RQ.y)} + ${fmt(RP.z*RQ.z)} = <b>${fmt(dotRPRQ)}</b>`,
     `cos R = ${fmt(dotRPRQ)} / (${fmt(dPR)} × ${fmt(dQR)})`,
     `cos R = ${fmt(dotRPRQ)} / ${fmt(dPR*dQR)} = ${fmt(dotRPRQ/(dPR*dQR))}`,
-    `R = cos⁻¹(${fmt(dotRPRQ/(dPR*dQR))}) = <b>${fmt(angR)}°</b>`,
+    `R = cos⁻¹(${fmt(dotRPRQ/(dPR*dQR))}) = <b>${fDMS(angR)}</b>`,
   ];
 
   // Pasos área
@@ -3945,7 +3958,7 @@ function triCalc(){
   ];
 
   const verif=Math.abs(sumAng-180)<0.01
-    ?`<span style="color:var(--green)">✓ ${fmt(angP)}° + ${fmt(angQ)}° + ${fmt(angR)}° = ${fmt(sumAng)}° ≈ 180°</span>`
+    ?`<span style="color:var(--green)">✓ ${fDMS(angP)} + ${fDMS(angQ)} + ${fDMS(angR)} = ${fmt(sumAng)}° ≈ 180°</span>`
     :`<span style="color:var(--red)">⚠ Suma = ${fmt(sumAng)}° (revisar datos)</span>`;
 
   document.getElementById('tri-res').innerHTML=`
@@ -3956,9 +3969,9 @@ function triCalc(){
       ${mkResult('Lado PR', fMag(dPR), '#2dd4a0')}
     </div>
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-      ${mkResult('Ángulo P', fmt(angP)+'°', '#f0c040')}
-      ${mkResult('Ángulo Q', fmt(angQ)+'°', '#4da6ff')}
-      ${mkResult('Ángulo R', fmt(angR)+'°', '#2dd4a0')}
+      ${mkResult('Ángulo P', fDMS(angP), '#f0c040')}
+      ${mkResult('Ángulo Q', fDMS(angQ), '#4da6ff')}
+      ${mkResult('Ángulo R', fDMS(angR), '#2dd4a0')}
     </div>
     <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
       ${mkResult('Perímetro', fMag(dPQ+dQR+dPR))}
