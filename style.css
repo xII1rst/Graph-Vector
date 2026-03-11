@@ -117,23 +117,57 @@ canvas:active{cursor:grabbing}
   #cw{
     flex:1;min-width:0;border-right:1px solid #1e2d45;
   }
-  #panel-tog-wrap{display:none} /* ocultar el toggle de panel en desktop */
+  #panel-tog-wrap{display:none}
   #bottom{
     width:380px;flex-shrink:0;
     border-top:none;border-left:1px solid #1e2d45;
     display:flex;flex-direction:column;overflow:hidden;
     max-height:none;
   }
-  #bottom.collapsed{display:flex} /* en desktop siempre visible */
-  .panel{max-height:none;flex:1}
+  #bottom.collapsed{display:flex}
+  .panel{max-height:none;flex:1;overflow-y:auto}
   .tabs{flex-shrink:0}
+
+  /* ── Todos los módulos: layout desktop lado a lado ── */
+  /* EM */
+  #em-app{ flex-direction:column }
+  .em-body-wrap{
+    display:flex;flex-direction:row;flex:1;min-height:0;overflow:hidden;
+  }
+  .em-canvas-area{
+    flex:1;min-width:0;border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+  }
+  .em-panel-area{
+    width:380px;flex-shrink:0;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .em-panel-tog-wrap{display:none}
+  .em-panel{max-height:none;flex:1;overflow-y:auto}
+  .em-tabs{flex-shrink:0}
+
+  /* MAT */
+  #mat-app{ flex-direction:column }
+  .mat-body{flex:1;min-height:0}
+  .mat-panel{max-height:none;overflow-y:auto}
+
+  /* INEQ */
+  #ineq-app{ flex-direction:column }
+  .ineq-pick{overflow-y:auto;max-height:none;flex:1}
+  .ineq-solver-body{max-height:none;overflow-y:auto}
+
+  /* CALC */
+  #calc-app{ flex-direction:column }
+  .calc-scroll{overflow-y:auto}
 }
 
 @media (min-width:1000px){
   #bottom{width:440px}
+  .em-panel-area{width:440px}
 }
 @media (min-width:1400px){
   #bottom{width:520px}
+  .em-panel-area{width:520px}
 }
 
 /* ── VECTOR CARDS (redesigned) ── */
@@ -198,30 +232,6 @@ canvas:active{cursor:grabbing}
   font-size:11px;font-family:'Space Mono',monospace;font-weight:700;
   padding:6px 12px;cursor:pointer;letter-spacing:.04em;transition:all .2s}
 #btn-reset:hover{border-color:var(--accent);color:var(--accent)}
-
-/* ── BOTTOM PANEL ── */
-#bottom{background:#0d1220;border-top:1px solid #1e2d45;flex-shrink:0;transition:all .25s}
-#bottom.collapsed{display:none}
-#panel-tog-wrap{display:flex;justify-content:flex-end;align-items:center;
-  padding:5px 12px;background:var(--surface);border-top:1px solid var(--border)}
-#panel-tog-btn{display:flex;align-items:center;gap:6px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;
-  transition:all .2s;user-select:none}
-#panel-tog-btn:hover{border-color:var(--border2)}
-#panel-tog-btn.on{border-color:var(--accent);background:rgba(240,192,64,.08)}
-#panel-tog-btn .tog-lbl{font-size:10px;font-family:'Space Mono',monospace;font-weight:700;
-  color:var(--text3);letter-spacing:.06em;transition:color .2s}
-#panel-tog-btn.on .tog-lbl{color:var(--accent)}
-#panel-tog-btn.on .sw-track{background:var(--accent)}
-#panel-tog-btn.on .sw-knob{transform:translateX(14px);background:#0a0f1a}
-.tabs{display:flex;background:#0a0f1a;border-bottom:1px solid #1a2840;overflow-x:auto}.tabs::-webkit-scrollbar{display:none}
-.tab{flex:1;padding:10px 6px;font-size:9px;font-weight:700;letter-spacing:.06em;text-align:center;white-space:nowrap;
-  background:none;border:none;font-family:'Space Mono',monospace;cursor:pointer;
-  color:#5a7a9a;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase}
-.tab.on{color:#7c6af7;background:#0d1220;border-bottom-color:#7c6af7}
-
-.panel{display:none;padding:12px 14px 16px;overflow-y:auto;max-height:340px}
-.panel.on{display:block}
 
 /* ── VECTOR CARDS (redesigned) ── */
 .vec-card{
