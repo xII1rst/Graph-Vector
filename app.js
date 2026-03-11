@@ -99,7 +99,9 @@ function toFrac(x){
 function fN(x,dec=4){
   if(fracMode) return toFrac(x);
   if(isNaN(x)||!isFinite(x)) return '—';
-  return x.toFixed(dec);
+  const s=x.toFixed(dec);
+  // Quitar ceros finales y punto innecesario: 16.0000→16, 3.1400→3.14
+  return s.includes('.')?s.replace(/\.?0+$/,''):s;
 }
 function fV(vx,vy,vz){ return mode===3?`(${fN(vx)}, ${fN(vy)}, ${fN(vz)})`:`(${fN(vx)}, ${fN(vy)})`; }
 
