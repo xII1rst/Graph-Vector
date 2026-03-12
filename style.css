@@ -388,11 +388,6 @@ canvas:active{cursor:grabbing}
 .action-btn.blue:active{background:var(--blue);color:#0a0f1a}
 
 /* ── LAUNCHER SCREEN ─────────────────────────────────── */
-#launcher{
-  position:fixed;inset:0;z-index:1000;background:#060a10;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .4s,transform .4s;
-}
 #launcher.hidden{opacity:0;pointer-events:none;transform:scale(.97)}
 .launcher-title{
   font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;
@@ -542,13 +537,21 @@ canvas:active{cursor:grabbing}
 
 /* ── LAUNCHER v3 ─────────────────────── */
 #launcher {
-  background: #080c14;
+  background: transparent;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 0 24px; gap: 0;
+  position: fixed; inset: 0; z-index: 10;
+  overflow: hidden;
+  transition: opacity .4s, transform .4s;
 }
-.sc-logo { display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:40px; }
+.sc-logo { display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:36px; }
 .sc-logo-icon { font-size:52px;line-height:1;margin-bottom:8px;filter:drop-shadow(0 0 24px rgba(124,106,247,.5)); }
+#sc-omega-logo { animation: sc-float 3.6s ease-in-out infinite; margin-bottom:10px; }
+@keyframes sc-float {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-7px); }
+}
 .sc-logo-name { font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;color:#e8f0fc; }
 .sc-logo-name .hi { color:#7c6af7; }
 .sc-logo-sub { font-family:'Space Mono',monospace;font-size:9px;color:#3a5a7a;letter-spacing:.18em;text-transform:uppercase;margin-top:2px; }

@@ -66,7 +66,7 @@
 
     for(let i = 0; i < count; i++){
       const text  = FORMULAS[Math.floor(Math.random() * FORMULAS.length)];
-      const size  = 9 + Math.random() * 11;
+      const size  = 8 + Math.random() * 8;
       const angle = (Math.random() - 0.5) * 0.5;
       measure.font = `${size}px "Space Mono", monospace`;
       const tw = measure.measureText(text).width;
@@ -91,7 +91,7 @@
             text,
             x, y,
             size,
-            opacity: 0.045 + Math.random() * 0.09,
+            opacity: 0.025 + Math.random() * 0.05,
             angle,
             color: COLORS[Math.floor(Math.random() * COLORS.length)],
           });
@@ -135,7 +135,34 @@
 
 
 
-// ── SERVICE WORKER (GitHub Pages) ───────────────────
+// ── LOGO Ω — ANIMACIÓN ELECTRONES ───────────────────
+(function scLogoAnim(){
+  const e1 = document.getElementById('sc-e1');
+  const e2 = document.getElementById('sc-e2');
+  const e3 = document.getElementById('sc-e3');
+  if(!e1) return;
+  const RX = 88, RY = 24;
+  const orbits = [
+    { el: e1, rot:  0,                angle: 0,   speed: 0.012 },
+    { el: e2, rot:  60*Math.PI/180,   angle: 2.1, speed: 0.010 },
+    { el: e3, rot: -60*Math.PI/180,   angle: 4.2, speed: 0.011 },
+  ];
+  let t = 0;
+  function frame(){
+    t++;
+    orbits.forEach(o => {
+      const a = o.angle + t * o.speed;
+      const lx = RX * Math.cos(a), ly = RY * Math.sin(a);
+      const c = Math.cos(o.rot), s = Math.sin(o.rot);
+      o.el.setAttribute('transform',
+        `translate(${(lx*c - ly*s).toFixed(2)},${(lx*s + ly*c).toFixed(2)})`);
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+
 let deferredPrompt=null;
 if('serviceWorker' in navigator){
   const swCode=[

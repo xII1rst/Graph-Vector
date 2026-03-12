@@ -12,9 +12,72 @@
 <body>
 <canvas id="sc-bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
 <!-- LAUNCHER v3 — Super Calc -->
-<div id="launcher" style="position:relative;z-index:1">
+<div id="launcher">
   <div class="sc-logo">
-    <div class="sc-logo-icon">∑</div>
+    <svg id="sc-omega-logo" width="120" height="120" viewBox="-105 -105 210 210"
+      fill="none" xmlns="http://www.w3.org/2000/svg"
+      style="overflow:visible;filter:drop-shadow(0 0 28px rgba(124,106,247,.35))">
+      <defs>
+        <radialGradient id="gOmega" cx="50%" cy="35%" r="65%">
+          <stop offset="0%"   stop-color="#ede9fe"/>
+          <stop offset="40%"  stop-color="#a594ff"/>
+          <stop offset="100%" stop-color="#5b45d4"/>
+        </radialGradient>
+        <filter id="fGlw" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="2.8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="fGlwSm" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="1.8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="fHalo" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Grid -->
+      <g stroke="#7c6af7" stroke-width=".35" opacity=".13">
+        <line x1="-100" y1="-80" x2="100" y2="-80"/>
+        <line x1="-100" y1="-60" x2="100" y2="-60"/>
+        <line x1="-100" y1="-40" x2="100" y2="-40"/>
+        <line x1="-100" y1="-20" x2="100" y2="-20"/>
+        <line x1="-100" y1="0"   x2="100" y2="0"/>
+        <line x1="-100" y1="20"  x2="100" y2="20"/>
+        <line x1="-100" y1="40"  x2="100" y2="40"/>
+        <line x1="-100" y1="60"  x2="100" y2="60"/>
+        <line x1="-100" y1="80"  x2="100" y2="80"/>
+        <line x1="-80" y1="-100" x2="-80" y2="100"/>
+        <line x1="-60" y1="-100" x2="-60" y2="100"/>
+        <line x1="-40" y1="-100" x2="-40" y2="100"/>
+        <line x1="-20" y1="-100" x2="-20" y2="100"/>
+        <line x1="0"   y1="-100" x2="0"   y2="100"/>
+        <line x1="20"  y1="-100" x2="20"  y2="100"/>
+        <line x1="40"  y1="-100" x2="40"  y2="100"/>
+        <line x1="60"  y1="-100" x2="60"  y2="100"/>
+        <line x1="80"  y1="-100" x2="80"  y2="100"/>
+      </g>
+      <!-- Órbitas -->
+      <ellipse cx="0" cy="0" rx="88" ry="24" stroke="#7c6af7" stroke-width="1.2" fill="none" opacity=".55" stroke-dasharray="4 2"/>
+      <ellipse cx="0" cy="0" rx="88" ry="24" stroke="#22d3ee" stroke-width="1.1" fill="none" opacity=".5"  stroke-dasharray="4 2" transform="rotate(60)"/>
+      <ellipse cx="0" cy="0" rx="88" ry="24" stroke="#f0c040" stroke-width="1.1" fill="none" opacity=".5"  stroke-dasharray="4 2" transform="rotate(-60)"/>
+      <!-- Electrones -->
+      <g id="sc-e1">
+        <circle r="14" fill="#080c14" stroke="#7c6af7" stroke-width="1.3" filter="url(#fGlwSm)"/>
+        <text x="0" y="5.5" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#a594ff" filter="url(#fGlwSm)">∑</text>
+      </g>
+      <g id="sc-e2">
+        <circle r="14" fill="#080c14" stroke="#22d3ee" stroke-width="1.3" filter="url(#fGlwSm)"/>
+        <text x="0" y="4.5" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#67e8f9" filter="url(#fGlwSm)">π</text>
+      </g>
+      <g id="sc-e3">
+        <circle r="14" fill="#080c14" stroke="#f0c040" stroke-width="1.3" filter="url(#fGlwSm)"/>
+        <text x="0" y="5.5" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#f0c040" filter="url(#fGlwSm)">∂</text>
+      </g>
+      <!-- Halo + Ω -->
+      <circle cx="0" cy="0" r="40" fill="rgba(124,106,247,.06)" filter="url(#fHalo)"/>
+      <text x="0" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="72" font-weight="700" fill="url(#gOmega)" filter="url(#fGlw)">Ω</text>
+    </svg>
     <div class="sc-logo-name">Super<span class="hi">Calc</span></div>
     <div class="sc-logo-sub">Super Calculator</div>
     <div class="sc-logo-ver">v 4.1.0</div>
