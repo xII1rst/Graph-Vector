@@ -1,4 +1,137 @@
-// SuperCalc v4.0.0 — Application Logic
+// SuperCalc v4.1.0 — Application Logic
+
+// ── BACKGROUND FÓRMULAS ─────────────────────────────
+(function scBg(){
+  const cv = document.getElementById('sc-bg-canvas');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+
+  const FORMULAS = [
+    'E = mc²','F = ma','PV = nRT','a² + b² = c²',
+    '∇·E = ρ/ε₀','∇×B = μ₀J','λ = h/p','∂f/∂x',
+    '∮E·dA = Q/ε₀','eⁱᵖ + 1 = 0','F = kq₁q₂/r²',
+    'sin²θ + cos²θ = 1','v = λf','p = mv',
+    '∫₀^∞ e⁻ˣ dx','lim(x→0)','dy/dx','∇²φ = 0',
+    'τ = r × F','W = ΔKE','n! = n(n-1)!','i² = -1',
+    '|v| = √(x²+y²)','T = 2π√(L/g)','β = v/c',
+    'Ψ(x,t)','ΔxΔp ≥ ħ/2','∂²u/∂t²',
+    'f(x) = Σ aₙxⁿ','ω = 2πf','Z = R + jX',
+    'A·B = |A||B|cosθ','A×B = |A||B|sinθ',
+    'q = mcΔT','S = k·ln W','η = W/Q_H',
+    'v² = u² + 2as','s = ut + ½at²',
+    'det(A)','Σᵢ xᵢ/n','P(A|B)','E[X]',
+    'cosh²x − sinh²x = 1','log_b(xy)',
+    'α','β','γ','δ','ε','θ','λ','μ','ν','ρ','σ','τ','φ','ψ','ω','ξ',
+    '∞','∫','∂','∇','∑','Π','√','±','≈','≠','∈','∅','ħ','Δ','∮',
+  ];
+
+  const COLORS = [
+    'rgba(124,106,247,',
+    'rgba(165,148,255,',
+    'rgba(34,211,238,',
+    'rgba(240,192,64,',
+    'rgba(16,185,129,',
+  ];
+
+  let items = [];
+  let needsRedraw = true;
+  let W = 0, H = 0;
+
+  function build(){
+    W = window.innerWidth;
+    H = window.innerHeight;
+    cv.width  = W;
+    cv.height = H;
+    items = [];
+
+    // Medimos el ancho aproximado de cada texto sin renderizar al DOM
+    // usando un canvas offscreen temporal
+    const measure = document.createElement('canvas').getContext('2d');
+
+    // Lista de bounding boxes ya ocupados {x1,y1,x2,y2}
+    const placed = [];
+    const PAD = 6; // espacio mínimo entre items
+
+    function overlaps(nx1, ny1, nx2, ny2){
+      for(let i = 0; i < placed.length; i++){
+        const b = placed[i];
+        if(nx1 - PAD < b.x2 && nx2 + PAD > b.x1 &&
+           ny1 - PAD < b.y2 && ny2 + PAD > b.y1) return true;
+      }
+      return false;
+    }
+
+    const count   = Math.floor((W * H) / 8500);
+    const maxTries = 20; // intentos por item antes de descartar
+
+    for(let i = 0; i < count; i++){
+      const text  = FORMULAS[Math.floor(Math.random() * FORMULAS.length)];
+      const size  = 9 + Math.random() * 11;
+      const angle = (Math.random() - 0.5) * 0.5;
+      measure.font = `${size}px "Space Mono", monospace`;
+      const tw = measure.measureText(text).width;
+      const th = size; // altura aproximada = font-size
+
+      // Calcular AABB conservador considerando la rotación
+      const cos = Math.abs(Math.cos(angle));
+      const sin = Math.abs(Math.sin(angle));
+      const bw  = tw * cos + th * sin;
+      const bh  = tw * sin + th * cos;
+
+      let placed_ok = false;
+      for(let t = 0; t < maxTries; t++){
+        const x = bw/2  + Math.random() * (W - bw);
+        const y = bh    + Math.random() * (H - bh);
+        const x1 = x - bw/2, y1 = y - bh;
+        const x2 = x + bw/2, y2 = y;
+
+        if(!overlaps(x1, y1, x2, y2)){
+          placed.push({x1, y1, x2, y2});
+          items.push({
+            text,
+            x, y,
+            size,
+            opacity: 0.045 + Math.random() * 0.09,
+            angle,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          });
+          placed_ok = true;
+          break;
+        }
+      }
+      // Si no encontró espacio en maxTries intentos, simplemente omite ese item
+    }
+    needsRedraw = true;
+  }
+
+  function draw(){
+    if(!needsRedraw) return;
+    ctx.clearRect(0, 0, W, H);
+    items.forEach(it => {
+      ctx.save();
+      ctx.translate(it.x, it.y);
+      ctx.rotate(it.angle);
+      ctx.font = `${it.size}px "Space Mono", monospace`;
+      ctx.fillStyle = it.color + it.opacity + ')';
+      ctx.fillText(it.text, 0, 0);
+      ctx.restore();
+    });
+    needsRedraw = false;
+  }
+
+  function loop(){ draw(); requestAnimationFrame(loop); }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 120); // debounce para no redibujar 60x/s
+  });
+
+  build();
+  loop();
+})();
+
+
 
 
 
@@ -6,7 +139,7 @@
 let deferredPrompt=null;
 if('serviceWorker' in navigator){
   const swCode=[
-    "const CACHE='supercalc-4.0.0';",
+    "const CACHE='supercalc-4.1.0';",
     "const PRECACHE=['./','./index.html','./style.css','./app.js','https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap'];",
     "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(PRECACHE.map(url=>c.add(new Request(url,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()));});",
     "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});",
@@ -1800,6 +1933,11 @@ function launchSubmod(id) {
       document.getElementById('calc-app').classList.add('visible');
       calcInit();
     }, 300);
+  } else if (id === 'ineq') {
+    document.getElementById('submod-screen').classList.remove('visible');
+    setTimeout(() => {
+      document.getElementById('ineq-app').classList.add('visible');
+    }, 300);
   }
 }
 
@@ -2583,7 +2721,7 @@ function drawNumLine(points, solutionLabels) {
 
 
 // ═══════════════════════════════════════════════════════
-// CÁLCULO MODULE v4.0.0
+// CÁLCULO MODULE v4.1.0
 // ═══════════════════════════════════════════════════════
 
 // ── Estado ──
