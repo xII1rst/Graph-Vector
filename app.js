@@ -1995,6 +1995,85 @@ const SUBMOD_CONFIG = {
 
 let currentParent = null;
 
+// ══════════════════════════════════════════════════════
+// ── NAVEGACIÓN CON HISTORY API (back button) ──────────
+// Cada transición empuja un estado al historial del navegador.
+// El botón back del SO/navegador dispara popstate y retrocede
+// un nivel en lugar de cerrar la app.
+// ══════════════════════════════════════════════════════
+
+// Estados posibles: 'launcher' | 'submod' | 'module'
+function navPush(state){
+  history.pushState(state, '');
+}
+
+window.addEventListener('popstate', (e) => {
+  const state = e.state;
+  // Determinar dónde estamos ahora y retroceder un nivel
+  const moduleIds = ['app','em-app','mat-app','calc-app','ineq-app'];
+  const activeModule = moduleIds.find(id => {
+    const el = document.getElementById(id);
+    return el && (el.style.display === 'flex' || el.classList.contains('visible'));
+  });
+  const submodVisible = document.getElementById('submod-screen')?.classList.contains('visible');
+
+  if(activeModule){
+    // Estamos en un módulo → volver a submod-screen sin cerrar app
+    _closeModuleNoHistory(activeModule.replace('-app','').replace('app','vectors'));
+  } else if(submodVisible){
+    // Estamos en submod → volver al launcher
+    _closeSubmodNoHistory();
+  } else {
+    // Estamos en el launcher → preguntar si quiere salir
+    _confirmExit();
+  }
+  // Siempre mantener al menos un estado en el historial
+  // para que el siguiente back también lo interceptemos
+  history.pushState({sc:'base'}, '');
+});
+
+// Inicializar historial al cargar
+window.addEventListener('load', () => {
+  history.replaceState({sc:'launcher'}, '');
+  history.pushState({sc:'base'}, '');
+});
+
+// ── Versiones internas sin pushState (evitar loops) ────
+function _closeSubmodNoHistory(){
+  document.getElementById('submod-screen').classList.remove('visible');
+  const launcher = document.getElementById('launcher');
+  launcher.style.display = 'flex';
+  launcher.style.opacity = '0';
+  setTimeout(() => {
+    launcher.classList.remove('hidden');
+    launcher.style.opacity = '';
+  }, 50);
+}
+
+function _closeModuleNoHistory(id){
+  if(id==='vectors')      document.getElementById('app').style.display='none';
+  else if(id==='em')      document.getElementById('em-app').classList.remove('visible');
+  else if(id==='mat')     document.getElementById('mat-app').classList.remove('visible');
+  else if(id==='ineq'){   document.getElementById('ineq-app').classList.remove('visible'); setTimeout(()=>ineqBack(),350); }
+  else if(id==='calc')    document.getElementById('calc-app').classList.remove('visible');
+  setTimeout(() => {
+    document.getElementById('submod-screen').classList.add('visible');
+  }, 50);
+}
+
+function _confirmExit(){
+  // Diálogo nativo de confirmación de salida
+  // En PWA instalada en Android esto actúa como el back final
+  const confirmed = confirm('¿Salir de SuperCalc?');
+  if(confirmed){
+    // Dejar que el navegador maneje el back real
+    history.go(-2);
+  } else {
+    // Reempujar estado para seguir interceptando
+    history.pushState({sc:'base'}, '');
+  }
+}
+
 function openSubmod(parent) {
   currentParent = parent;
   const cfg = SUBMOD_CONFIG[parent];
@@ -2015,6 +2094,7 @@ function openSubmod(parent) {
     launcher.style.display = 'none';
     document.getElementById('submod-screen').classList.add('visible');
   }, 300);
+  navPush({sc:'submod', parent});
 }
 
 function closeSubmod() {
@@ -2061,6 +2141,7 @@ function launchSubmod(id) {
       document.getElementById('ineq-app').classList.add('visible');
     }, 300);
   }
+  navPush({sc:'module', id});
 }
 
 function closeModule(id) {
