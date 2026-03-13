@@ -1,4 +1,4 @@
-// SuperCalc v4.1.0 — Application Logic
+// SuperCalc v1.9.4 — Application Logic
 
 // ── BACKGROUND FÓRMULAS ─────────────────────────────
 (function scBg(){
@@ -166,7 +166,7 @@
 let deferredPrompt=null;
 if('serviceWorker' in navigator){
   const swCode=[
-    "const CACHE='supercalc-4.1.0';",
+    "const CACHE='supercalc-1.9.4';",
     "const PRECACHE=['./','./index.html','./style.css','./app.js','https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap'];",
     "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(PRECACHE.map(url=>c.add(new Request(url,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()));});",
     "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});",
@@ -2843,7 +2843,7 @@ function drawNumLine(points, solutionLabels) {
 
 
 // ═══════════════════════════════════════════════════════
-// CÁLCULO MODULE v4.1.0
+// CÁLCULO MODULE v1.9.4
 // ═══════════════════════════════════════════════════════
 
 // ── Estado ──
