@@ -2,7 +2,7 @@
 
 **Progressive Web App** de cálculo científico y visualización matemática.  
 Desarrollada por **Ing. Rafael Miranda (xII1rst)**  
-Disponible en: supercalc-sooty.vercel.app
+Disponible en: supercalc-sooty.vercel.app 
 
 ---
 
