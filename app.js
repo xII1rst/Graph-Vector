@@ -5130,6 +5130,10 @@ const GRAF_TYPES = {
   },
 };
 
+function grafInit(){
+  grafSetType(grafType);
+}
+
 function grafSetType(type) {
   grafType = type;
   document.querySelectorAll('.graf-type-card').forEach(c => c.classList.remove('sel'));

@@ -513,9 +513,9 @@
     </div>
   </div>
   <div class="calc-tabs">
-    <button class="calc-tab on" id="seq-tab-terminos" onclick="seqSetMode('terminos')">Σ Término n-ésimo</button>
-    <button class="calc-tab" id="seq-tab-pa" onclick="seqSetMode('pa')">PA Aritmética</button>
-    <button class="calc-tab" id="seq-tab-pg" onclick="seqSetMode('pg')">PG Geométrica</button>
+    <button class="seq-tab on" id="seq-tab-terminos" onclick="seqSetMode('terminos')">Σ Término n-ésimo</button>
+    <button class="seq-tab" id="seq-tab-pa" onclick="seqSetMode('pa')">PA Aritmética</button>
+    <button class="seq-tab" id="seq-tab-pg" onclick="seqSetMode('pg')">PG Geométrica</button>
   </div>
   <div style="flex:1;overflow-y:auto;padding:14px">
     <!-- Panel término n-ésimo -->
@@ -1110,10 +1110,42 @@
 <!-- ══ GRAFICAR ══ -->
 <div class="calc-panel" id="calc-pGraf">
   <div class="calc-scroll">
-    <div class="calc-sec">Tipo de función</div>
-    <div class="graf-type-grid" id="graf-type-grid"></div>
-    <div id="graf-coef-section"></div>
-    <canvas id="graf-canvas" height="260"></canvas>
+    <div class="calc-sec">Graficador de funciones</div>
+    <div class="graf-type-grid">
+      <div class="graf-type-card sel" id="gtype-lin" onclick="grafSetType('lin')">
+        <div class="graf-type-icon">━</div><div class="graf-type-name">Lineal</div>
+      </div>
+      <div class="graf-type-card" id="gtype-quad" onclick="grafSetType('quad')">
+        <div class="graf-type-icon">∪</div><div class="graf-type-name">Cuadrática</div>
+      </div>
+      <div class="graf-type-card" id="gtype-abs" onclick="grafSetType('abs')">
+        <div class="graf-type-icon">|x|</div><div class="graf-type-name">Valor Abs.</div>
+      </div>
+      <div class="graf-type-card" id="gtype-exp" onclick="grafSetType('exp')">
+        <div class="graf-type-icon">bˣ</div><div class="graf-type-name">Exponencial</div>
+      </div>
+    </div>
+    <div class="graf-inputs-section">
+      <div class="calc-sec" id="graf-inputs-title">Coeficientes — Lineal</div>
+      <div id="graf-coef-fields"></div>
+      <div class="graf-formula-preview" id="graf-formula-preview">y = x</div>
+      <div class="calc-field-row" style="margin-top:6px">
+        <label>Puntos: x = −N … N, N =</label>
+        <input class="calc-inp calc-inp-sm" id="graf-pts-n" value="3" type="number" min="1" max="10"/>
+      </div>
+      <div class="calc-btn-row">
+        <button class="calc-btn" onclick="grafDraw()">Graficar</button>
+        <button class="calc-btn sec" onclick="grafClear()">Limpiar</button>
+      </div>
+    </div>
+    <div id="graf-canvas-wrap" style="display:none">
+      <canvas id="graf-cv" style="width:100%;border-radius:8px;display:block"></canvas>
+      <div id="graf-table" class="graf-table"></div>
+    </div>
+    <div id="graf-steps-wrap" style="display:none">
+      <div class="calc-sec">Pasos de cálculo</div>
+      <div id="graf-steps" class="graf-steps"></div>
+    </div>
   </div>
 </div>
 </div>
